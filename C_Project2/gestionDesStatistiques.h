@@ -1,17 +1,4 @@
 
-/**
-* Reçoit le stream d’ouverture du fichier en paramètre et assure
-* sa fermeture avec gestion des possibles les erreurs. 
-*	
-* Paramètres :
-*   - entree; stream d’entrée du fichier.
-*/
-void fermetureDuFichier(FILE* entree);
-
-/**
-* Affiche un message d’erreur et provoque l’arrêt du programme.
-*/
-void sortieDurgenceDuFichier();
 
 /**
 * Reçoit le fichier d’entrée en paramètre et retourne le nombre
@@ -34,34 +21,22 @@ int obtenirNombreDeMot(char* fichierDentree);
 int obtenirNombreDeLigne(char* fichierDentree);
 
 /**
-* Récupère chaque mot du fichier et l’ajoute à la liste chainée. Elle retourne 
-* un pointeur sur la tête de la liste.
-*	 
+* Reçoit une chaîne et un caractère en paramètre, compte le nombre 
+* d’occurrence du caractère dans la chaîne et retourne le résultat.
+*
 * Paramètres :
-*   - fichierDentree : le fichier d’entrée.
-*   - tete; l’adresse de la tête de la liste.
+*   - chaine; la chaîne de caractères.
+*   - lettre;le caractère.
 */
-struct cellule* recupererLesMotsDuFichier(char* fichierDentree, struct cellule* tete);
+int compterNombreOccurrence(char* chaine, char lettre);
 
 /**
-* Calcul les statistiques et génère le fichier de sortie. 
-* Elle retourne un pointeur sur la tête de la liste.
-*	 
+* Retourne la lettre de la chaîne reçu en paramètre qui apparaît le plus souvent. 
+*	
 * Paramètres :
-*   - fichierDentree : le fichier d’entrée.
-*   - tete; l’adresse de la tête de la liste.
-*   - fichierDeSortie : le fichier de sortie.
+*   - chaine; la chaîne de caractères.
 */
-void genererFichierDeSortie(char* fichierDentree, struct cellule* tete, char* fichierDeSortie);
+char obtenirLettrePlusFrequente(char* chaine);
 
-/**
-* Affiche la liste chainée à la console et génère le fichier de sortie.
-*	 
-* Paramètres :
-*   - option : l’option.
-*   - tete: l’adresse de la tête de la liste.
-*   - fichierDentree : le fichier d’entrée.
-*   - fichierDeSortie : le fichier de sortie.
-*/
-void afficherListeEtGenererStat(char* option, struct cellule** tete, 
-        char* fichierDentree, char* fichierDeSortie);
+
+

@@ -5,6 +5,7 @@
 #include <string.h>
 #include "gestionDesStatistiques.h"
 #include "listeChainee.h"
+#include "gestionFichier.h"
 #include "main.h"
 
 struct cellule* creerLeNoeud(char* chaine)
@@ -107,7 +108,7 @@ int incrementerValeurNoeud(char* chaine, struct cellule** tete)
   return estCompte;
 }
 
-int obtenirNombreElementDeLaListe(struct cellule* tete)
+int obtenirNbDesMotsSansDoublons(struct cellule* tete)
 {
   struct cellule* courant = tete;
   int compteur = 0;
@@ -119,7 +120,7 @@ int obtenirNombreElementDeLaListe(struct cellule* tete)
   return compteur ;
 }
 
-int obtenirNbLettresMotSansDoublons(struct cellule* tete)
+int obtenirNbLettresDesMotSansDoublons(struct cellule* tete)
 {
   struct cellule* courant = tete;
   int compteur = 0;
@@ -131,12 +132,12 @@ int obtenirNbLettresMotSansDoublons(struct cellule* tete)
   return compteur;
 }
 
-char* concatenerLesMotsDeLaListe(struct cellule* tete)
+char* concatenerLesMotsSansDoublons(struct cellule* tete)
 {
-  int taille = obtenirNbLettresMotSansDoublons(tete);
+  int taille = obtenirNbLettresDesMotSansDoublons(tete);
   char* chaine = calloc(taille+1, sizeof(char));
   if(chaine == NULL)
-    sortieDurgenceDuFichier();
+    ErreurAllocation();
   struct cellule* courant = tete;
   while(courant != NULL)
   {
@@ -144,42 +145,6 @@ char* concatenerLesMotsDeLaListe(struct cellule* tete)
     courant = courant ->suivant;
   }
   return chaine;
-}
-
-int compterNombreOccurence(char* chaine, char lettre)
-{
-  int i, compteur = 0;
-  for(i = 0; i < strlen(chaine); i++)
-  {
-    if(chaine[i] == lettre)
-      compteur++;
-  }
-  return compteur;
-}
-
-
-char obtenirLettrePlusFrequente(char* chaine)
-{
-  int i, nombre;
-  char lettre;
-  int max = 0;
-  for(i = 0; i < strlen(chaine); i++)
-  {
-    nombre = compterNombreOccurence (chaine, chaine[i]);
-    if(nombre > max)
-    {
-      max = nombre;
-      lettre = chaine[i];
-    }
-  }
-  return lettre;
-}
-
-void afficherListeOrdonnee(char* fichierDentree, struct cellule** tete)
-{
-  printf("Liste ordonnée des mots sans doublons:\n");
-  *tete = recupererLesMotsDuFichier(fichierDentree, *tete);
-  afficherListeChainee(*tete);
 }
 
 void libererLaListeChainee(struct cellule** tete)
@@ -192,19 +157,4 @@ void libererLaListeChainee(struct cellule** tete)
     courant = courant->suivant;
     free(tmp);
   }
-}
-
-void supprimerNonMajuscule (char tab[81])
-{
-   int i;
-   int j = 0;
-   for(i = 0; tab[i] != '\0'; i++)
-   {
-      if(tab[i] >= 'A' && tab[i] <= 'Z')
-      {
-         tab[j] = tab[i];
-         j++;
-      }
-   }
-   tab[j] = '\0';
 }

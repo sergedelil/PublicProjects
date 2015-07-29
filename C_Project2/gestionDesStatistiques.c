@@ -3,107 +3,65 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include "gestionDesStatistiques.h"
 #include "listeChainee.h"
+#include "gestionFichier.h"
 #include "main.h"
 
-
-void fermetureDuFichier(FILE* entree)
-{
-  if(fclose(entree) == EOF)
-  {
-    printf("Erreur lors de la fermeture du fichier.\n");
-    exit(1);
-  }
-}
-
-void sortieDurgenceDuFichier()
-{
-    printf("Erreur: %s\n", strerror(errno));
-    exit(1);
-}
 
 int obtenirNombreDeMot(char* fichierDentree)
 {
   char mot[81];
   int nombreDeMot = 0;
-  FILE* entree = fopen(fichierDentree,"r");
-  if(entree == NULL)
-    sortieDurgenceDuFichier();
+  FILE* entree = ouvrirFichier(fichierDentree);
   while (fscanf(entree,"%s",mot) > 0)
     nombreDeMot++;
-  fermetureDuFichier(entree);
+  fermerFichier(entree);
   return nombreDeMot;
 }
 
 int obtenirNombreDeLigne(char* fichierDentree)
 {
   char carac;
-  int nombreDeLigne = 0;
-  FILE* entree = fopen(fichierDentree,"r");
-  if(entree == NULL)
-    sortieDurgenceDuFichier();
-  while ((carac = fgetc(entree)) != EOF)
+  int nombreDeLigne = 0, fin = EOF;
+  FILE* entree = ouvrirFichier(fichierDentree);
+  while((carac = fgetc(entree)) != EOF)
   {
     if(carac == '\n')
       nombreDeLigne++;
+    fin = carac;
   }
-  fermetureDuFichier(entree);
+  if(fin != EOF && fin != '\n')
+    nombreDeLigne++;
+  else if (fin != EOF && fin == '\n')
+    nombreDeLigne++;
+  fermerFichier(entree);
   return nombreDeLigne;
 }
 
-struct cellule* recupererLesMotsDuFichier(char* fichierDentree, struct cellule* tete)
+int compterNombreOccurrence(char* chaine, char lettre)
 {
-  char mot[81];
-  int ajoute = 0;
-  FILE* entree = fopen(fichierDentree,"r");
-  if(entree == NULL)
-    sortieDurgenceDuFichier();
-  while(fscanf(entree,"%s",mot) > 0)
+  int i, compteur = 0;
+  for(i = 0; i < strlen(chaine); i++)
   {
-    supprimerNonMajuscule(mot);
-    if(contient(mot, &tete))
-      incrementerValeurNoeud(mot, &tete);
-    else
+    if(chaine[i] == lettre)
+      compteur++;
+  }
+  return compteur;
+}
+
+char obtenirLettrePlusFrequente(char* chaine)
+{
+  int i, nombre, max = 0;
+  char lettre;
+  for(i = 0; i < strlen(chaine); i++)
+  {
+    nombre = compterNombreOccurrence (chaine, chaine[i]);
+    if(nombre > max)
     {
-      ajoute = ajouterMotALaListe(mot, &tete);
-      if(!ajoute)
-        ErreurAllocation();
+      max = nombre;
+      lettre = chaine[i];
     }
   }
-  fermetureDuFichier(entree);
-  return tete;
-}
-
-void genererFichierDeSortie(char* fichierDentree, struct cellule* tete, 
-        char* fichierDeSortie)
-{
-  char* chaine = concatenerLesMotsDeLaListe(tete);
-  int nbMotSansDoublons = obtenirNombreElementDeLaListe(tete);
-  int nbMotAvecDoublons = obtenirNombreDeMot(fichierDentree) - 
-  obtenirNombreElementDeLaListe(tete);
-  int nbLigne = obtenirNombreDeLigne(fichierDentree);
-  int nbLettre = obtenirNbLettresMotSansDoublons(tete);
-  char lettre = obtenirLettrePlusFrequente(chaine);
-  free(chaine);
-  FILE* sortie = fopen(fichierDeSortie, "w");
-  fprintf(sortie, "le nombre de mots sans doublons: %d\n", nbMotSansDoublons);
-  fprintf(sortie, "le nombre de mots avec doublons: %d\n", nbMotAvecDoublons);
-  fprintf(sortie, "le nombre de lignes dans le fichier d'entrée: %d\n", nbLigne);
-  fprintf(sortie, "le nombre de lettres dans la liste de mots (sans doublons): %d\n", nbLettre);
-  fprintf(sortie, "la lettre la plus fréquente (sans considérer les doublons): %c\n", lettre);
-  fermetureDuFichier (sortie);
-}
-
-void afficherListeEtGenererStat(char* option, struct cellule** tete, 
-        char* fichierDentree, char* fichierDeSortie)
-{
-  if(strcmp(option,"-S") == 0)
-  {
-    printf("Liste ordonnée des mots sans doublons:\n");
-    *tete = recupererLesMotsDuFichier(fichierDentree, *tete);
-    afficherListeChainee(*tete);
-    genererFichierDeSortie(fichierDentree,*tete,fichierDeSortie );
-  }
-  else
-    printf("Erreur: L'option indiquée, n'est pas valide\n");
+  return lettre;
 }

@@ -1,4 +1,6 @@
 
+
+
 /**
 * Affiche la liste des mots du fichier d’entrée 
 * en ordre et sans doublons.
@@ -21,3 +23,5 @@ void afficherListeOrdonnee(char* fichierDentree, struct cellule** tete);
 */
 void afficherListeEtGenererStat(char* option, struct cellule** tete, 
         char* fichierDentree, char* fichierDeSortie);
+
+
